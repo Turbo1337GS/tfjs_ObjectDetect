@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Detekcja obiektów</title>
+  <title>Object Detection</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <style>
@@ -66,7 +66,7 @@
 <body>
   <div class="container">
     <input type="file" id="fileInput" accept="image/*">
-    <img id="imageThumbnail" src="#" alt="Miniatura obrazu" style="display: none;">
+    <img id="imageThumbnail" src="#" alt="Image Thumbnail" style="display: none;">
     <div id="objectNames"></div>
     <div style="display:flex">
       <div id="redColumn" style="height: 0px; width: 50px; background-color:#ff0000"></div>
@@ -74,7 +74,7 @@
       <div id="blueColumn" style="height: 0px; width: 50px; background-color:#0000ff; margin-left: 10px;"></div>
     </div>
     <button id="detectButton" onclick="detectObjects()" style="display: none;">
-      <span id="buttonContents">Wykryj</span>
+      <span id="buttonContents">Detect</span>
       <span id="loader" class="loader"></span>
     </button>
   </div>
@@ -82,6 +82,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
   <script>
+    /**
+     * Performs object detection on the selected image.
+     */
     async function detectObjects() {
       const image = document.getElementById('imageThumbnail');
       const objectNames = document.getElementById('objectNames');
@@ -118,6 +121,9 @@
       loader.style.display = 'none';
     }
 
+    /**
+     * Displays the thumbnail of the selected image.
+     */
     function displayImageThumbnail() {
       const fileInput = document.getElementById('fileInput');
       const imageThumbnail = document.getElementById('imageThumbnail');
