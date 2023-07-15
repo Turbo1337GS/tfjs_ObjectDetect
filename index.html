@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Detekcja obiektów</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <style>
+    body {
+      background-color: #1f1f1f;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      text-align: center;
+    }
+    
+    #fileInput {
+      margin-bottom: 20px;
+    }
+    
+    #imageThumbnail {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      margin-bottom: 20px;
+    }
+    
+    #objectNames {
+      font-size: 18px;
+    }
+    
+    #detectButton {
+      background-color: #ff5722;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    #detectButton:hover {
+      background-color: #ff7043;
+    }
+    
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <input type="file" id="fileInput" accept="image/*">
+    <img id="imageThumbnail" src="#" alt="Miniatura obrazu" style="display: none;">
+    <div id="objectNames"></div>
+    <div style="display:flex">
+      <div id="redColumn" style="height: 0px; width: 50px; background-color:#ff0000"></div>
+      <div id="greenColumn" style="height: 0px; width: 50px; background-color:#00ff00; margin-left: 10px;"></div>
+      <div id="blueColumn" style="height: 0px; width: 50px; background-color:#0000ff; margin-left: 10px;"></div>
+    </div>
+    <button id="detectButton" onclick="detectObjects()" style="display: none;">
+      <span id="buttonContents">Wykryj</span>
+      <span id="loader" class="loader"></span>
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+  <script>
+    async function detectObjects() {
+      const image = document.getElementById('imageThumbnail');
+      const objectNames = document.getElementById('objectNames');
+      const redColumn = document.getElementById('redColumn');
+      const greenColumn = document.getElementById('greenColumn');
+      const blueColumn = document.getElementById('blueColumn');
+      const detectButton = document.getElementById('detectButton');
+      const loader = document.getElementById('loader');
+
+      image.style.display = 'none';
+      objectNames.textContent = '';
+      detectButton.disabled = true;
+      loader.style.display = 'inline-block';
+
+      const model = await cocoSsd.load();
+      const predictions = await model.detect(image);
+
+      let names = '';
+      for (let i = 0; i < predictions.length; i++) {
+        names += `${predictions[i].class} (${(predictions[i].score * 100).toFixed(2)}%), `;
+        if (i === 0) {
+          redColumn.style.height = (predictions[i].score * 30) + 'px';
+        } else if (i === 1) {
+          greenColumn.style.height = (predictions[i].score * 30) + 'px';
+        } else if (i === 2) {
+          blueColumn.style.height = (predictions[i].score * 30) + 'px';
+        }
+      }
+
+      objectNames.textContent = names.slice(0, -2);
+
+      image.style.display = 'inline-block';
+      detectButton.disabled = false;
+      loader.style.display = 'none';
+    }
+
+    function displayImageThumbnail() {
+      const fileInput = document.getElementById('fileInput');
+      const imageThumbnail = document.getElementById('imageThumbnail');
+      const detectButton = document.getElementById('detectButton');
+
+      const fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        imageThumbnail.src = e.target.result;
+        imageThumbnail.style.display = 'inline-block';
+        detectButton.style.display = 'block';
+      };
+      fileReader.readAsDataURL(fileInput.files[0]);
+    }
+
+    const fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', displayImageThumbnail);
+  </script>
+</body>
+</html>
