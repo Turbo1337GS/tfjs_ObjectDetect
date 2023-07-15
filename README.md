@@ -2,6 +2,9 @@
 
 This is the code for a simple web application that performs object detection using TensorFlow.js and the COCO-SSD model. The application allows the user to select an image file and then detects objects within the image, displaying their names and confidence scores.
 
+ * https://main.gigasoft.com.pl/Object%20Detect/index.html
+
+
 ## Usage
 
 To use this application, follow these steps:
